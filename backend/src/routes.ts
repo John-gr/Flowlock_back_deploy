@@ -126,7 +126,9 @@ router.get(
       `SELECT m.*, json_agg(json_build_object('recipient', s.recipient, 'bps', s.bps)) AS splits
        FROM milestones m
        LEFT JOIN splits s ON s.milestone_id = m.id
-       WHERE m.agreement_id = $1
+       WHERE m.agreement_id = (
+         SELECT id FROM agreements WHERE id = $1 OR on_chain_id = $1 LIMIT 1
+       )
        GROUP BY m.id
        ORDER BY m.milestone_index`,
       [id],
