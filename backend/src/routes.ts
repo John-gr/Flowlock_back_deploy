@@ -41,9 +41,11 @@ router.post("/api/agreements", apiKeyAuth, async (req, res) => {
   try {
     await client.query("BEGIN");
 
+    // Use ON CONFLICT to handle duplicate on_chain_id gracefully (unique constraint)
     const agResult = await client.query(
       `INSERT INTO agreements (payer, provider, settlement_asset, platform, milestone_count, status, on_chain_id)
        VALUES ($1, $2, $3, $4, $5, 'Draft', $6)
+       ON CONFLICT (on_chain_id) DO UPDATE SET updated_at = NOW()
        RETURNING id`,
       [
         data.payer,
