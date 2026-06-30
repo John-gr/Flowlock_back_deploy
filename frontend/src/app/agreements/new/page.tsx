@@ -428,6 +428,7 @@ export default function NewAgreementPage() {
           provider: form.provider,
           settlement_asset: form.settlement_asset,
           platform: form.platform,
+          on_chain_id: Number(onChainId),
           milestones: form.milestones.map((m) => ({
             amount: String(xlmToStroops(m.amount)),
             delivery_deadline: dtToTs(m.delivery_deadline),
