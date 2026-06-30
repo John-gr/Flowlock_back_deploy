@@ -42,8 +42,12 @@ export async function createAgreementOnChain(
     platform: params.platform,
     milestones: params.milestones,
   });
-  const result = await tx.signAndSend();
-  return result.result as number;
+  // tx.result is the simulated return value (set during auto-simulation before signAndSend).
+  // In stellar-sdk v16, sent.result may be undefined for submitted txs, so prefer tx.result.
+  const simulated = tx.result;
+  const sent = await tx.signAndSend();
+  const raw = simulated ?? sent?.result;
+  return Number(typeof raw === "bigint" ? raw : raw ?? 0);
 }
 
 export async function fundMilestoneOnChain(
